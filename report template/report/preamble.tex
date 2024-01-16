@@ -1,0 +1,180 @@
+\usepackage{fancyheadings}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{longtable}
+
+\usepackage{multicol}
+\setlength\columnseprule{0.4pt}
+%\setlength{\parindent}{0in}
+\usepackage{listings}
+
+\lstset
+{ %Formatting for code in appendix
+	basicstyle=\footnotesize,
+	numbers=left,
+	stepnumber=1,
+	showstringspaces=false,
+	tabsize=1,
+	breaklines=true,
+	breakatwhitespace=false
+}
+
+\usepackage{xargs} 
+\usepackage[pdftex,dvipsnames]{xcolor}
+
+%Mathematics
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{polynom}
+\usepackage{mathtools}
+\usepackage{float}
+\usepackage{aliascnt}
+
+\newaliascnt{eqfloat}{equation}
+\newfloat{eqfloat}{h}{eqflts}
+\floatname{eqfloat}{Equation}
+\newcommand*{\ORGeqfloat}{}
+\let\ORGeqfloat\eqfloat
+\def\eqfloat{%
+	\let\ORIGINALcaption\caption
+	\def\caption{%
+		\addtocounter{equation}{-1}%
+		\ORIGINALcaption
+	}%
+	\ORGeqfloat
+}
+\usepackage{upgreek}
+
+\usepackage{pict2e}
+
+%Theorems, Lemmas, Corollaries, and Proofs
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newcommand{\lemref}[1]{\textit{Lemma \ref{#1}}}
+\newcommand{\thmref}[1]{\textbf{Theorem \ref{#1}}}
+\newcommand{\colref}[1]{\textit{Corollary \ref{#1}}}
+\renewcommand\qedsymbol{$\halmos$}
+\newcommand\lhop{\textit{L'H$\hat{o}$pital's rule}}
+
+%Professor Latex Commands:
+\newcommand{\tr}{\mathrm{tr}}
+\newcommand{\det}{\mathrm{det}}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\lan}{\langle}
+\newcommand{\ran}{\rangle}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\inn}[1]{\lan#1\ran}
+\newcommand{\ol}{\overline}
+\newcommand{\F}{\mathbf{F}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\L}{\mathcal{L}}
+\newcommand{\span}{\text{span}}
+\newcommand{\null}{\text{null}}
+\newcommand{\res}{\text{Res}}
+\newcommand{\ds}{\displaystyle}
+\newcommand{\range}{\text{range}}
+
+\makeatletter
+\newcommand{\crossout}[1]{%
+	\begingroup
+	\settowidth{\dimen@}{#1}%
+	\setlength{\unitlength}{0.05\dimen@}%
+	\settoheight{\dimen@}{#1}%
+	\count@=\dimen@
+	\divide\count@ by \unitlength
+	\begin{picture}(0,0)
+		\put(0,0){\line(20,\count@){20}}
+		\put(0,\count@){\line(20,-\count@){20}}
+	\end{picture}%
+	#1%
+	\endgroup
+}
+\usepackage{tikz, pgfplots}
+\usetikzlibrary{patterns}
+\usetikzlibrary{positioning}
+\newcommand\halmos{\rule{.36em}{2ex}}
+\newcommand{\powerset}[1]{\mathcal{P}(#1)}
+\def\contradict{\tikz[baseline, x=0.22em, y=0.22em, line width=0.032em]\draw (0,2.83)--(2.83,0) (0.71,3.54)--(3.54,0.71) (0,0.71)--(2.83,3.54) (0.71,0)--(3.54,2.83);}
+
+%Citations
+\usepackage{cite}
+\usepackage[backend=bibtex,style=verbose-trad2]{biblatex} %works really really well, but no MLA format
+%\usepackage[backend=biber,style=mla]{biblatex} %Doesn't print all sources for some reason
+\addbibresource{references.bib}
+\bibliographystyle{apalike}
+\bibliography{references.bib} 
+\nocite{*}
+
+%Symbols and Other
+\usepackage{upgreek}
+\usepackage{graphicx}
+\usepackage{animate}
+\usepackage{caption}
+\newcommand{\source}[1]{\caption*{Source: {#1}} }
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks,
+	allcolors=black
+	%citecolor=black,
+	%filecolor=black,
+	%linkcolor=black,
+	%urlcolor=black
+}
+%onehalfspacing
+\linespread{1}
+%\doublespacing
+
+\pagestyle{fancy}
+\headheight 32pt
+
+\usepackage{pdfpages}
+%}
+
+% Drafting 
+%{
+\usepackage[colorinlistoftodos,prependcaption, textsize=tiny]{todonotes}
+\usepackage{lipsum}
+\newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+\newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\newcommandx{\toadd}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
+\newcommandx{\info}[2][1=]{\todo[linecolor=yellow,backgroundcolor=yellow!25,bordercolor=yellow,#1]{#2}}
+\newcommandx{\improve}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
+\newcommandx{\hiddentodo}[2][1=]{\todo[disable,#1]{#2}}
+%}
+
+% Physics (Electrodynamics)
+\newcommand{\del}{\overline{\nabla}}
+\newcommand{\M}{\mathbf{M}} % Magnetization
+\newcommand{\B}{\mathbf{B}} % Magnetic Field
+\newcommand{\E}{\mathbf{E}} % Electric Field
+\newcommand{\J}{\mathbf{J}} % Current Density
+\newcommand{\K}{\mathbf{K}} % Surface Current Density
+\newcommand{\MFI}{\mathbf{H}} % Magnetic Field Intensity
+\newcommand{\br}{\mathbf{r}}
+
+
+\usetikzlibrary{arrows}
+%Script r (scalar)
+\newcommand{\rc}{%
+\resizebox{!}{1.25ex}{%
+    \begin{tikzpicture}[>=round cap]
+        \clip (0.09em,-0.05ex) rectangle (0.61em,0.81ex);
+        \draw [line width=.11ex, <->, rounded corners=0.13ex] (0.1em,0.1ex) .. controls (0.24em,0.4ex) .. (0.35em,0.8ex) .. controls (0.29em,0.725ex) .. (0.25em,0.6ex) .. controls (0.7em,0.8ex) and (0.08em,-0.4ex) .. (0.55em,0.25ex);
+    \end{tikzpicture}%
+}%
+}
+
+%Script r (vector)
+\newcommand{\brc}{%
+\resizebox{!}{1.3ex}{%
+    \begin{tikzpicture}[>=round cap]
+        \clip (0.085em,-0.1ex) rectangle (0.61em,0.875ex);
+        \draw [line width=.2ex, <->, rounded corners=0.13ex] (0.1em,0.1ex) .. controls (0.24em,0.4ex) .. (0.35em,0.8ex) .. controls (0.29em,0.725ex) .. (0.25em,0.6ex) .. controls (0.7em,0.8ex) and (0.08em,-0.4ex) .. (0.55em,0.25ex);
+    \end{tikzpicture}%
+}%
+}
+
+%Script r with a hat (unit vector)
+\newcommand{\hrc}{\hat{\brc}}

@@ -1,0 +1,75 @@
+%Formatting
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[left=0.8in, right=0.8in, bottom=1.07in, top=1.1in]{geometry}
+\usepackage[skip=7pt plus1pt, indent=0]{parskip}
+
+\input{preamble.tex}
+% ========================================= %
+% Change for each document [!!!]
+\newcommand\course{PHY324S}	% Course Code [!!!]
+\newcommand\doctitle{TITLE} % Report Title [!!!]
+\newcommand\yourname{Aditya Rao 1008307761 \\ Rony Modak-Parai 1008293856}  
+\newcommand{\taname}{-- FILL IN --} % TA Name [!!!]
+\newcommand{\location}{-- FILL IN--} % Location [!!!]
+% ========================================= %
+ 
+\pagenumbering{gobble}
+
+\begin{document}
+    \title{\doctitle}
+	\author{\yourname}
+	\date{\textbf{TA:} \taname \\ \textbf{Location:} \location \\
+        \textbf{Date:} -- FILL IN --} %Put in date of submission [!!!]
+
+	\maketitle
+	
+	\tableofcontents
+    \thispagestyle{empty}
+    
+    \newpage
+    \clearpage
+    \pagenumbering{arabic}
+    %So the heading doesn't show up on table of contents page
+	%\lhead{\yourname\ \vspace{0.1cm} \\ \course}
+	\lhead{\yourname\ \vspace{0.1cm}}
+    \chead{\textbf{\course} \\ \doctitle}
+    \rhead{\textbf{TA: }\taname \\ \textbf{Loc:} \location}
+    
+    \begin{abstract}
+        \noindent
+        \lipsum[1]
+    \end{abstract}
+
+    \section{Introduction} \label{sec:intro}  
+        \lipsum[1]
+
+    \section{Results} \label{sec:results}
+        \lipsum[1]
+
+    \section{Analysis and Discussion} \label{sec:analysis}
+        \lipsum[1]
+ 
+    \section{Conclusion} \label{sec:conclusion}
+        \lipsum[1]
+        
+    \newpage
+    \pagenumbering{roman}
+    \section{References} \label{sec:references}
+        \printbibliography[heading=none]
+
+    
+    \appendix
+    \section{Constants and Equations}
+    
+    \section{Uncertainty Calculations} \label{sec:uncertainty}
+
+    \section{Figures} \label{sec:figures}
+        %\input{figures/figures}
+
+    \section{Raw Data} \label{sec:data}
+        %\input{figures/data_I}
+        %\input{figures/data_DV}
+        
+\end{document}
