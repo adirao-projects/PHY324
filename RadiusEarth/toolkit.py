@@ -12,6 +12,11 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 #from uncertainties import ufloat
 
+font = {'family' : 'DejaVu Sans',
+        'size'   : 30}
+
+plt.rc('font', **font)
+
 def curve_fit_data_dep(xdata, ydata, fit_type, override=False, 
                    override_params=(None,), uncertainty=None, 
                    res=False, chi=False):
@@ -114,7 +119,7 @@ def curve_fit_data_dep(xdata, ydata, fit_type, override=False,
     
 def curve_fit_data(xdata, ydata, fit_type, override=False, 
                    override_params=(None,), uncertainty=None, 
-                   res=False, chi=False):
+                   res=False, chi=False, uncertainty_x=None):
     
     def chi_sq_red(measured_data:list[float], expected_data:list[float], 
                uncertainty:list[float], v: int):
@@ -222,15 +227,16 @@ def curve_fit_data(xdata, ydata, fit_type, override=False,
     
     
 def quick_plot_residuals(xdata, ydata, plot_x, plot_y,
-                         residuals, meta=None, uncertainty=[], save=False):
+                         residuals, meta=None, uncertainty=[], save=False, 
+                         uncertainty_x=[]):
     """
     Relies on the python uncertainties package to function as normal, however,
     this can be overridden by providing a list for the uncertainties.
     """
-    fig = plt.figure(figsize=(10,8))
-    gs = gridspec.GridSpec(ncols=11, nrows=9, figure=fig)
+    fig = plt.figure(figsize=(14,10))
+    gs = gridspec.GridSpec(ncols=11, nrows=8, figure=fig)
     main_fig = fig.add_subplot(gs[:4,:])
-    res_fig = fig.add_subplot(gs[7:,:])
+    res_fig = fig.add_subplot(gs[6:,:])
     
     if type(uncertainty) is int:
         uncertainty = [uncertainty]*len(xdata)
@@ -238,32 +244,48 @@ def quick_plot_residuals(xdata, ydata, plot_x, plot_y,
     elif len(uncertainty) == 0:
         for y in ydata:
             uncertainty.append(y.std_dev)
+            
+    if type(uncertainty_x) is int:
+        uncertainty_x = [uncertainty_x]*len(xdata)
+        
+    elif len(uncertainty_x) == 0:
+        for x in xdata:
+            uncertainty_x.append(x.std_dev)
 
     if meta is None:
         meta = {'title' : 'INSERT-TITLE',
                 'xlabel' : 'INSERT-XLABEL',
                 'ylabel' : 'INSERT-YLABEL',
-                'chi_sq' : 0}
+                'chi_sq' : 0,
+                'fit-label': "Best Fit",
+                'data-label': "Data",
+                'save-name' : 'IMAGE',
+                'loc' : 'lower right'}
     #popt, pcov, new_xdata, new_ydata, chi_sq, residuals = curve_fit_data(
     #    angle_data, period_data, fit_type='log', 
     #    uncertainty=period_uncert, res=True, chi=True)                
 
-    main_fig.set_title(meta['title'])
-    main_fig.errorbar(xdata, ydata, yerr=uncertainty,
-                      markersize='4', fmt='o', color='black')
+    main_fig.set_title(meta['title'], fontsize = 46)
+    main_fig.errorbar(xdata, ydata, yerr=uncertainty, xerr=uncertainty_x,
+                      markersize='4', fmt='o', color='black', 
+                      label=meta['data-label'])
     main_fig.plot(plot_x, plot_y, linestyle='dashed',
-                  label=r'Best Fit')  #$\chi_{red}^2$=%1.2f'%meta['chi_sq'])
+                  label=meta['fit-label'])  #$\chi_{red}^2$=%1.2f'%meta['chi_sq'])
 
     main_fig.set_xlabel(meta['xlabel'])
     main_fig.set_ylabel(meta['ylabel'])
-    main_fig.legend(loc='lower right')
+    main_fig.legend(loc=meta['loc'])
+    
+    #fig.ylabel(meta['ylabel'])
+    #plt.ylabel(meta['ylabel'])
 
     res_fig.errorbar(xdata, residuals, markersize='3', color='red', fmt='o', 
+                     xerr=uncertainty_x,
                      yerr=uncertainty, ecolor='black', alpha=0.7)
     res_fig.axhline(y=0, linestyle='dashed', color='blue')
     res_fig.set_title('Residuals')
-    title = meta["title"]
-    plt.savefig('figures/'+title+'.png')
+    save_name = meta["save-name"]
+    plt.savefig(f'figures/{save_name}.png')
     
     #if save:
     #    fig.savefig(f'figures/{meta["title"]}.png')
