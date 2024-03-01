@@ -11,6 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from uncertainties import ufloat
+import datetime as dt
 
 import toolkit as tk
 
@@ -85,6 +86,40 @@ def graph_data(df, expnum):
     return data
 
 
+def graph_trend(df):
+    time = df['Time']
+
+    t0 = time[0]
+    time = np.array([((t.minute-t0.minute) +\
+                      ( t.hour-t0.hour)*60) for t in time])
+        
+    reading = df['Counter(mGal)']
+
+    uncert = [4*COUNTER_CONST]*len(reading)
+    
+    
+    data = tk.curve_fit_data(time, reading, 'linear-int', 
+                             uncertainty=uncert, chi=True, res=True)
+    
+    
+    meta = {'title' : f'Change in mGal reading on Floor 13',
+            'xlabel' : 'Time from first reading (s)',
+            'ylabel' : 'Counter Reading (mGal)',
+            'chi_sq' : data['chi-sq'],
+            'data-label': 'data point',
+            'fit-label': '$g = m t + g_0$',
+            'save-name': 'exp1_data.png',
+            'loc': 'lower left'}
+    
+    tk.quick_plot_residuals(time, reading, data['graph-horz'], 
+                            data['graph-vert'],
+                            data['residuals'], meta, uncertainty=uncert)
+    
+    
+    print(data['chi-sq'])
+    
+
+
 def calculate_radius_earth(gradient, grav = GRAV_ACCEL):
     return (-2)*(grav)*(1/gradient)
 
@@ -110,6 +145,10 @@ if __name__ == '__main__':
         R = calculate_radius_earth(grad)
         
         print(f'Radius of Earth {R}')
+        
+    df = load_data('Trend')
+    graph_trend(df)
+    
         
 
     

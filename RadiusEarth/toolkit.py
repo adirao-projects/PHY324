@@ -245,12 +245,12 @@ def quick_plot_residuals(xdata, ydata, plot_x, plot_y,
         for y in ydata:
             uncertainty.append(y.std_dev)
             
-    if type(uncertainty_x) is int:
-        uncertainty_x = [uncertainty_x]*len(xdata)
+    #if type(uncertainty_x) is int:
+    #    uncertainty_x = [uncertainty_x]*len(xdata)
         
-    elif len(uncertainty_x) == 0:
-        for x in xdata:
-            uncertainty_x.append(x.std_dev)
+    #elif len(uncertainty_x) == 0:
+    #    for x in xdata:
+    #        uncertainty_x.append(x.std_dev)
 
     if meta is None:
         meta = {'title' : 'INSERT-TITLE',
@@ -266,7 +266,7 @@ def quick_plot_residuals(xdata, ydata, plot_x, plot_y,
     #    uncertainty=period_uncert, res=True, chi=True)                
 
     main_fig.set_title(meta['title'], fontsize = 46)
-    main_fig.errorbar(xdata, ydata, yerr=uncertainty, xerr=uncertainty_x,
+    main_fig.errorbar(xdata, ydata, yerr=uncertainty, #xerr=uncertainty_x,
                       markersize='4', fmt='o', color='black', 
                       label=meta['data-label'])
     main_fig.plot(plot_x, plot_y, linestyle='dashed',
@@ -280,7 +280,7 @@ def quick_plot_residuals(xdata, ydata, plot_x, plot_y,
     #plt.ylabel(meta['ylabel'])
 
     res_fig.errorbar(xdata, residuals, markersize='3', color='red', fmt='o', 
-                     xerr=uncertainty_x,
+                     #xerr=uncertainty_x,
                      yerr=uncertainty, ecolor='black', alpha=0.7)
     res_fig.axhline(y=0, linestyle='dashed', color='blue')
     res_fig.set_title('Residuals')
