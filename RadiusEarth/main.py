@@ -22,7 +22,10 @@ HUMAN_SCOPE_ERROR_m = HUMAN_SCOPE_ERROR/100
 
 STEP = ufloat(0.177, 0.0005)
 
+FLOOR_HEIGHT_MEASURED = 0.177*22
 FLOOR_HEIGHT_STEP = STEP*22
+print(2*FLOOR_HEIGHT_STEP)
+print(FLOOR_HEIGHT_STEP)
 
 FLOOR_HEIGHT = 3.95 # m
 COUNTER_CONST = 0.1005 # Miligals
@@ -36,6 +39,15 @@ GRAV_ACCEL = 9.804253 # m/s
 meter = unit('m')
 cm = unit('cm')
 
+def floor_height_map(floor_number):
+    floor1 = FLOOR_HEIGHT_MEASURED*2
+    if floor_number>=2:
+        return (floor_number-1)*FLOOR_HEIGHT_MEASURED + floor1
+    elif floor_number == 1:
+        return floor1
+    elif floor_number == 0:
+        return 0 - floor1
+
 def save_data(data, title):
     with open(f'figures/{title}.txt', 'w') as f:
         print(data, file=f)
@@ -44,7 +56,7 @@ def save_data(data, title):
 def load_data(sheet_name:str):
     df = pd.read_excel('data.xlsx', sheet_name=sheet_name)
     df['Counter(mGal)'] = df['Counter'].mul(COUNTER_CONST)
-    df['Height(m)'] = df['Floor'].mul(FLOOR_HEIGHT_STEP.n)
+    df['Height(m)'] = pd.Series((floor_height_map(h) for h in df['Floor'].to_list()))
     
     return df
 
@@ -52,6 +64,8 @@ def load_data(sheet_name:str):
 def graph_data(df, expnum):
     #height = ufloat(df['Height(m)'], FLOOR_HEIGHT_STEP.s)
     height = df['Height(m)']
+    #height = [floor_height_map(h) for h in height.to_list()]
+    #height = np.array([int(h.nominal_value) for h in height])
     counter = df['Counter(mGal)']
     uncert = [4*COUNTER_CONST]*len(height)
 
