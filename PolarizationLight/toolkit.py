@@ -19,7 +19,7 @@ plt.rc('font', **font)
 
 def curve_fit_data_dep(xdata, ydata, fit_type, override=False, 
                    override_params=(None,), uncertainty=None, 
-                   res=False, chi=False):
+                   res=False, chi=False, model_function_custom=None):
     
     def chi_sq_red(measured_data:list[float], expected_data:list[float], 
                uncertainty:list[float], v: int):
@@ -74,6 +74,7 @@ def curve_fit_data_dep(xdata, ydata, fit_type, override=False,
         'xlnx' : model_function_xlnx,
         'log' : model_function_log,
         'exp' : model_function_exp,
+        'custom' : model_function_custom
         }
     
     try:
@@ -119,7 +120,8 @@ def curve_fit_data_dep(xdata, ydata, fit_type, override=False,
     
 def curve_fit_data(xdata, ydata, fit_type, override=False, 
                    override_params=(None,), uncertainty=None, 
-                   res=False, chi=False, uncertainty_x=None):
+                   res=False, chi=False, uncertainty_x=None,
+                   model_function_custom=None, guess=None):
     
     def chi_sq_red(measured_data:list[float], expected_data:list[float], 
                uncertainty:list[float], v: int):
@@ -174,6 +176,7 @@ def curve_fit_data(xdata, ydata, fit_type, override=False,
         'xlnx' : model_function_xlnx,
         'log' : model_function_log,
         'exp' : model_function_exp,
+        'custom' : model_function_custom
         }
     
     try:
@@ -192,8 +195,12 @@ def curve_fit_data(xdata, ydata, fit_type, override=False,
         else: 
             abs_sig = False
         
-        popt, pcov = curve_fit(model_func, xdata, ydata, sigma=uncertainty, 
-                               maxfev=2000, absolute_sigma=abs_sig)
+        if guess is not None:
+            popt, pcov = curve_fit(model_func, xdata, ydata, sigma=uncertainty, 
+                               maxfev=10000, absolute_sigma=abs_sig, p0=guess)
+        else:
+            popt, pcov = curve_fit(model_func, xdata, ydata, sigma=uncertainty, 
+                               maxfev=10000, absolute_sigma=abs_sig)
         param_num = len(popt)
     
         exp_ydata = model_func(xdata,*popt)
@@ -217,7 +224,8 @@ def curve_fit_data(xdata, ydata, fit_type, override=False,
             'graph-horz': new_xdata,
             'graph-vert': new_ydata,
             'chi-sq' : chi_sq,
-            'residuals' : residuals
+            'residuals' : residuals,
+            'pstd' : np.sqrt(np.diag(pcov))
             }
         
         return data_output
@@ -233,10 +241,12 @@ def quick_plot_residuals(xdata, ydata, plot_x, plot_y,
     Relies on the python uncertainties package to function as normal, however,
     this can be overridden by providing a list for the uncertainties.
     """
-    fig = plt.figure(figsize=(14,10))
-    gs = gridspec.GridSpec(ncols=11, nrows=8, figure=fig)
-    main_fig = fig.add_subplot(gs[:4,:])
-    res_fig = fig.add_subplot(gs[6:,:])
+    fig = plt.figure(figsize=(14,14))
+    gs = gridspec.GridSpec(ncols=11, nrows=11, figure=fig)
+    main_fig = fig.add_subplot(gs[:6,:])
+    res_fig = fig.add_subplot(gs[8:,:])
+    
+    main_fig.grid("on")
     
     if type(uncertainty) is int:
         uncertainty = [uncertainty]*len(xdata)
@@ -267,8 +277,8 @@ def quick_plot_residuals(xdata, ydata, plot_x, plot_y,
 
     main_fig.set_title(meta['title'], fontsize = 46)
     main_fig.errorbar(xdata, ydata, yerr=uncertainty, #xerr=uncertainty_x,
-                      markersize='4', fmt='o', color='black', 
-                      label=meta['data-label'])
+                      markersize='4', fmt='o', color='red', 
+                      label=meta['data-label'], ecolor='black')
     main_fig.plot(plot_x, plot_y, linestyle='dashed',
                   label=meta['fit-label'])  #$\chi_{red}^2$=%1.2f'%meta['chi_sq'])
 
@@ -293,5 +303,22 @@ def quick_plot_residuals(xdata, ydata, plot_x, plot_y,
     #        print(meta, file=f)
     
     #plt.show()
+    
+def quick_plot_test(xdata, ydata, plot_x = [], plot_y = [],
+                    uncertainty=[]):
+    plt.figure(figsize=((14,10)))
+    
+    plt.title("Test Plot for data")
+    plt.xlabel("X Data")
+    plt.ylabel("Y Data")
+    
+    if len(uncertainty) != 0:
+        plt.errorbars(xdata, ydata, xerr=uncertainty)
+    else:
+        plt.scatter(xdata, ydata)
+        
+    plt.grid("on")
+    plt.show()
+    
     
     
