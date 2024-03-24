@@ -68,11 +68,14 @@ def graph_data(df, weight, exp_num):
                              uncertainty=uncert, chi=True, res=True)
     
     #save_data(data, f'Plot for {weight} g (Exp: {exp_num})')
-    
-    meta = {'title' : f'Plot for {weight} g (Exp: {exp_num})',
-            'xlabel' : '$Current^2$ (A)',
+    fit_label = 'Fit: $D = \zeta_{' + str(weight) + '} I^2$'
+    meta = {'title' : f'Plot for load mass of {weight} mg '+f'(Exp: {exp_num})',
+            'save-name' : f'{weight}-{exp_num}',
+            'xlabel' : '$Current^2$ ($A^2$)',
             'ylabel' : 'Deflection (cm)',
-            'chi_sq' : data['chi-sq']}
+            'chi_sq' : data['chi-sq'],
+            'data-label': 'Deflection data',
+            'fit-label': fit_label}
     
     tk.quick_plot_residuals(current_sq, deflection, data['graph-horz'], 
                             data['graph-vert'],
@@ -101,11 +104,12 @@ def graph_data_mass(df, weight, exp_num):
                              uncertainty=uncert, chi=True, res=True)
     
     #save_data(data, f'Plot for {weight} g (Exp: {exp_num})')
-    
-    meta = {'title' : f'Plot for {weight} g (Exp: {exp_num})',
-            'xlabel' : '$Current^2$ (A)',
+    fit_label = '$D = \zeta_{' + str(weight) + '} I^2$'
+    meta = {'title' : f'Plot for $m_\Delta$ = {weight} mg (Exp: {exp_num})',
+            'xlabel' : '$Current^2$ ($A^2$)',
             'ylabel' : 'Deflection (cm)',
-            'chi_sq' : data['chi-sq']}
+            'chi_sq' : data['chi-sq'],
+            'fit-label': fit_label}
     
     tk.quick_plot_residuals(current_sq, deflection, data['graph-horz'], 
                             data['graph-vert'],
@@ -137,7 +141,7 @@ def compare_curves(dic):
         
         plt.plot(x_data, y_data, label=key, linestyle='dashed')
     """  
-    plt.title('Deflection Comparison')
+    plt.title('Deflection of different load masses')
     
     m = []
     
@@ -145,33 +149,33 @@ def compare_curves(dic):
     
     m0 = ufloat(m0, s0)
     
-    plt.plot(x_data, y_data, label='0', linestyle='dashed')
+    plt.plot(x_data, y_data, label='$m_\Delta$ = 0', linestyle='dashed')
     print("0:", "m_0 TBD")
     
     x_data, y_data, m10, s10 = dic['10-3'] 
       
-    plt.plot(x_data, y_data, label='10', linestyle='dashed')
+    plt.plot(x_data, y_data, label='$m_\Delta$ = 10', linestyle='dashed')
     print("10:", "m_0", get_init_mass(m0, m10, 10))
     
     m.append(get_init_mass(m0, m10, 10))
     
     x_data, y_data, m20, s20 = dic['20-3']       
-    plt.plot(x_data, y_data, label='20', linestyle='dashed')
+    plt.plot(x_data, y_data, label='$m_\Delta$ = 20', linestyle='dashed')
     print("20:", "m_0", get_init_mass(m0, m20, 20))
     m.append(get_init_mass(m0, m20, 20))
     
     x_data, y_data, m30, s30 = dic['30-2']       
-    plt.plot(x_data, y_data, label='30', linestyle='dashed')
+    plt.plot(x_data, y_data, label='$m_\Delta$ = 30', linestyle='dashed')
     print("30:", "m_0", get_init_mass(m0, m30, 30))
     m.append(get_init_mass(m0, m30, 30))
     
     x_data, y_data, m40, s40 = dic['40-1']       
-    plt.plot(x_data, y_data, label='40', linestyle='dashed')
+    plt.plot(x_data, y_data, label='$m_\Delta$ = 40', linestyle='dashed')
     print("40:", "m_0", get_init_mass(m0, m40, 40))
     m.append(get_init_mass(m0, m40, 40))
     
     x_data, y_data, m50, s50 = dic['50-3']       
-    plt.plot(x_data, y_data, label='50', linestyle='dashed')
+    plt.plot(x_data, y_data, label='$m_\Delta$ = 50', linestyle='dashed')
     print("50:", "m_0", get_init_mass(m0, m50, 50))
     m.append(get_init_mass(m0, m50, 50))
     
@@ -181,11 +185,11 @@ def compare_curves(dic):
     #plt.plot(x_data, y_data, label='500-1', linestyle='dashed')
     #x_data, y_data, m = dic['100-1']
     #plt.plot(x_data, y_data, label='100-1', linestyle='dashed')
-    plt.xlabel('$Current^2$ (A)')
+    plt.xlabel('$Current^2$ ($A^2$)')
     plt.ylabel('Deflection (cm)')
     
-    plt.legend(loc='upper left', title='$m_\Delta \ (mg)$', fontsize='xx-small', 
-               title_fontsize='x-small')
+    plt.legend(loc='upper left', title='Fit: $D = \zeta_{m_\Delta} I^2$', 
+               fontsize='xx-small', title_fontsize='x-small')
     
     plt.savefig('figures/compare.png')
     

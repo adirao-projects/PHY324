@@ -13,7 +13,7 @@ import matplotlib.gridspec as gridspec
 #from uncertainties import ufloat
 
 font = {'family' : 'DejaVu Sans',
-        'size'   : 30}
+        'size'   : 25}
 
 plt.rc('font', **font)
 

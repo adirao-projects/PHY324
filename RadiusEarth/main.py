@@ -20,14 +20,14 @@ HUMAN_SCOPE_ERROR = 0.1 #cm
 
 HUMAN_SCOPE_ERROR_m = HUMAN_SCOPE_ERROR/100
 
-STEP = ufloat(0.177, 0.0005)
+STEP = ufloat(0.177, 0.006)
 
 FLOOR_HEIGHT_MEASURED = 0.177*22
 FLOOR_HEIGHT_STEP = STEP*22
 print(2*FLOOR_HEIGHT_STEP)
 print(FLOOR_HEIGHT_STEP)
 
-FLOOR_HEIGHT = 3.95 # m
+FLOOR_HEIGHT = 3.9 #5 # m
 COUNTER_CONST = 0.1005 # Miligals
 
 GRAV_CONST = 6.67e-11
@@ -56,10 +56,21 @@ def save_data(data, title):
 def load_data(sheet_name:str):
     df = pd.read_excel('data.xlsx', sheet_name=sheet_name)
     df['Counter(mGal)'] = df['Counter'].mul(COUNTER_CONST)
-    df['Height(m)'] = pd.Series((floor_height_map(h) for h in df['Floor'].to_list()))
+    df['Height(m)'] = \
+        pd.Series((floor_height_map(h) for h in df['Floor'].to_list()))
     
     return df
 
+
+def order_mag_floor_grav(n):
+    grav = 0
+    for k in range(0,n):
+        grav += (floor_height_map(n)-floor_height_map(k))**(-2)
+        
+    for k in range(n+1,14):
+        grav -= (floor_height_map(n)-floor_height_map(k))**(-2)
+        
+    return grav*(10**6)*GRAV_CONST
 
 def graph_data(df, expnum):
     #height = ufloat(df['Height(m)'], FLOOR_HEIGHT_STEP.s)
@@ -78,13 +89,13 @@ def graph_data(df, expnum):
     
     #save_data(data, f'Plot for {weight} g (Exp: {exp_num})')
     
-    meta = {'title' : f'Floor-mGal plot',
-            'xlabel' : 'Floor Height (m)',
-            'ylabel' : 'Counter (mGal)',
+    meta = {'title' : f'Height-Grav. Acceleration for experiment {expnum}',
+            'xlabel' : '$\Delta R$ (m)',
+            'ylabel' : '$\Delta g$ (mGal)',
             'chi_sq' : data['chi-sq'],
             'data-label': 'data point',
-            'fit-label': '$g = \zeta h + g_0$',
-            'save-name': 'exp1_data.png',
+            'fit-label': '$\Delta g = \zeta \Delta R + g_0$',
+            'save-name': f'exp{expnum}_data',
             'loc': 'lower left'}
     
     tk.quick_plot_residuals(height, counter, data['graph-horz'], 
@@ -96,6 +107,10 @@ def graph_data(df, expnum):
     print(meta['chi_sq'])
     
     data['pstd'] = np.sqrt(np.diag(data['pcov']))
+    
+    print(i,f"Chi^2: {data['chi-sq']}", \
+          f"Zeta: {data['popt'][0]} +/- {data['pstd'][0]}", \
+          f"f_0: {data['popt'][1]} +/- {data['pstd'][1]}")
     
     return data
 
@@ -116,22 +131,21 @@ def graph_trend(df):
                              uncertainty=uncert, chi=True, res=True)
     
     
-    meta = {'title' : f'Change in mGal reading on Floor 13',
+    meta = {'title' : 'Change in mGal reading on Floor 13',
             'xlabel' : 'Time from first reading (s)',
-            'ylabel' : 'Counter Reading (mGal)',
+            'ylabel' : '$\Delta g$ (mGal)',
             'chi_sq' : data['chi-sq'],
             'data-label': 'data point',
-            'fit-label': '$g = m t + g_0$',
-            'save-name': 'exp1_data.png',
+            'fit-label': '$\Delta g = m \Delta R + g_0$',
+            'save-name': 'exp_trend_data',
             'loc': 'lower left'}
     
     tk.quick_plot_residuals(time, reading, data['graph-horz'], 
                             data['graph-vert'],
                             data['residuals'], meta, uncertainty=uncert)
-    
-    
-    print(data['chi-sq'])
-    
+     
+    print("TREND")
+    print(data['chi-sq'], data['popt'])
 
 
 def calculate_radius_earth(gradient, grav = GRAV_ACCEL):
@@ -146,15 +160,17 @@ if __name__ == '__main__':
     print(FLOOR_HEIGHT_STEP, FLOOR_HEIGHT)
     
     for i in range(1, 5):
-        df = load_data(f'Exp{i}')
-        data = graph_data(df, 1)
+        df = load_data(f'Exp{i}-1')
+        data = graph_data(df, i)
         #print(data['popt'])
         grad, grav0 = data['popt']
         grad = ufloat(grad, data['pstd'][0])
         grad = convert_mGal(grad)
         grav0 = convert_mGal(grav0)
         
-        grav0 = ufloat(grav0, data['pstd'][1])
+        print('GRAV', GRAV_ACCEL)
+        
+        grav0 = ufloat(GRAV_ACCEL, data['pstd'][1])
         
         R = calculate_radius_earth(grad)
         
@@ -163,6 +179,8 @@ if __name__ == '__main__':
     df = load_data('Trend')
     graph_trend(df)
     
+    
+    print(order_mag_floor_grav(5))
         
 
     
