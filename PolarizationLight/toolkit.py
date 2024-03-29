@@ -278,11 +278,17 @@ def quick_plot_residuals(xdata, ydata, plot_x, plot_y,
     #popt, pcov, new_xdata, new_ydata, chi_sq, residuals = curve_fit_data(
     #    angle_data, period_data, fit_type='log', 
     #    uncertainty=period_uncert, res=True, chi=True)                
-
+    
     main_fig.set_title(meta['title'], fontsize = 46)
-    main_fig.errorbar(xdata, ydata, yerr=uncertainty, #xerr=uncertainty_x,
-                      markersize='4', fmt='o', color='red', 
-                      label=meta['data-label'], ecolor='black')
+    if len(uncertainty_x)==0:
+        main_fig.errorbar(xdata, ydata, yerr=uncertainty, #xerr=uncertainty_x,
+                          markersize='4', fmt='o', color='red', 
+                          label=meta['data-label'], ecolor='black')
+    else:
+        main_fig.errorbar(xdata, ydata, yerr=uncertainty, xerr=uncertainty_x,
+                          markersize='4', fmt='o', color='red', 
+                          label=meta['data-label'], ecolor='black')
+    
     main_fig.plot(plot_x, plot_y, linestyle='dashed',
                   label=meta['fit-label'])  #$\chi_{red}^2$=%1.2f'%meta['chi_sq'])
 
